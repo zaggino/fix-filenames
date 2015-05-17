@@ -1,0 +1,25 @@
+{
+  "name": "fix-filenames",
+  "version": "1.0.0",
+  "description": "renames non ascii characters in files and directories",
+  "main": "index.js",
+  "bin": {
+    "fix-filenames": "index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaggino/fix-filenames.git"
+  },
+  "author": "Martin Zagora <zaggino@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zaggino/fix-filenames/issues"
+  },
+  "homepage": "https://github.com/zaggino/fix-filenames#readme",
+  "dependencies": {
+    "bluebird": "^2.9.25"
+  }
+}
