@@ -56,7 +56,7 @@ function fixFilename(filepath, doRename) {
       console.log("renaming: " + filename + " to: " + newname + " in: " + dirpath);
       fs.rename(filepath, path.resolve(dirpath, newname), function (err) {
         if (err) {
-          return reject(err);
+          console.warn("error renaming (" + err.code + ") path: " + err.path);
         }
         resolve();
       });
