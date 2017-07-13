@@ -1,6 +1,6 @@
 {
   "name": "fix-filenames",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "renames non ascii characters in files and directories",
   "main": "index.js",
   "bin": {
