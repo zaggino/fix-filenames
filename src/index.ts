@@ -8,9 +8,13 @@ import { log } from './log';
 const codemap = CodeMap;
 const warnedFor: { [charCode: number]: true } = {};
 
+export interface LaunchOptions {
+  doRename: boolean;
+}
+
 function fixFilename(
   filepath: string,
-  doRename: boolean
+  options: LaunchOptions
 ) {
   return new Promise(((resolve, reject) => {
     const dirpath = path.dirname(filepath);
@@ -48,7 +52,7 @@ function fixFilename(
 
     if (newname !== filename) {
 
-      if (!doRename) {
+      if (!options.doRename) {
         log.info('would rename: ' + filename + ' to: ' + newname + ' in: ' + dirpath);
         return resolve();
       }
@@ -71,7 +75,7 @@ function fixFilename(
 
 function decideAction(
   itempath: string,
-  doRename: boolean
+  options: LaunchOptions
 ) {
   return new Promise(((resolve, reject) => {
     fs.stat(itempath, (err, stats) => {
@@ -86,11 +90,11 @@ function decideAction(
       }
 
       if (stats.isDirectory()) {
-        resolve(fixDirectoryContents(itempath, doRename).then(() => {
-          return fixFilename(itempath, doRename);
+        resolve(fixDirectoryContents(itempath, options).then(() => {
+          return fixFilename(itempath, options);
         }));
       } else if (stats.isFile()) {
-        resolve(fixFilename(itempath, doRename));
+        resolve(fixFilename(itempath, options));
       } else {
         reject(new Error('unexpected stats result for: ' + itempath));
       }
@@ -101,7 +105,7 @@ function decideAction(
 
 function fixDirectoryContents(
   dirpath: string,
-  doRename: boolean
+  options: LaunchOptions
 ) {
   return new Promise(((resolve, reject) => {
     fs.readdir(dirpath, (err, contents) => {
@@ -111,7 +115,7 @@ function fixDirectoryContents(
       }
 
       Promise.all(contents.map((content) => {
-        return decideAction(path.resolve(dirpath, content), doRename);
+        return decideAction(path.resolve(dirpath, content), options);
       })).then(() => {
         resolve();
       }).catch((err2) => {
@@ -140,7 +144,7 @@ if (require.main === module) {
       pathToSearch = process.cwd();
     }
 
-    fixDirectoryContents(pathToSearch, doRename)
+    fixDirectoryContents(pathToSearch, { doRename })
       .then(() => {
         log.info('finished without errors');
       })
