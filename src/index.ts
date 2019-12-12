@@ -9,8 +9,8 @@ if (require.main === module) {
 
     const userArgs = process.argv.slice(2);
     const doRename = userArgs.includes('--rename');
-    const pathSpecified = userArgs.indexOf('--path');
     const checkMp3s = userArgs.includes('--mp3');
+    const pathSpecified = userArgs.indexOf('--path');
 
     let pathToSearch;
     if (pathSpecified !== -1) {

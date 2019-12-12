@@ -25,3 +25,14 @@ to actually rename files:
 ```
 fix-filenames --rename
 ```
+
+to check ID3 tags in mp3 files:
+```
+fix-filenames --mp3
+```
+
+to rename ID3 tags in mp3 files:
+
+```
+fix-filenames --mp3 --rename
+```

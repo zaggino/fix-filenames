@@ -1,9 +1,8 @@
 import { promises as fsAsync } from 'fs';
 import * as path from 'path';
-import { CodeMap } from './codemap';
 import { log } from './log';
-
-const warnedFor: { [charCode: number]: true } = {};
+import { fixMp3Tags } from './mp3';
+import { fixString } from './fix-string';
 
 export interface LaunchOptions {
   doRename: boolean;
@@ -16,31 +15,8 @@ export async function fixFilename(
 ) {
   const dirpath = path.dirname(filepath);
   const filename = path.basename(filepath);
-  let newname = '';
-
-  for (let i = 0; i < filename.length; i++) {
-    const code = filename.charCodeAt(i);
-    if (code > 127) {
-
-      let newChar;
-      if (code > 9999) {
-        newChar = ' ';
-      } else {
-        newChar = typeof CodeMap[code] === 'string' ? CodeMap[code] : null;
-      }
-
-      if (newChar === null && !warnedFor[code]) {
-        log.warn('unknown char ' + code + ': ' + filename[i] + ' in file: ' + filename);
-        warnedFor[code] = true;
-      }
-      newname += newChar !== null ? newChar : filename[i];
-    } else {
-      newname += filename[i];
-    }
-  }
-
-  // cleanup multiple spaces and leading/trailing whitespace
-  newname = newname.replace(/\s+/g, ' ').trim();
+  let currentName = filename;
+  const newname = fixString(filename);
 
   if (!newname) {
     log.warn('empty result - cant fix: ' + filename + ' in: ' + dirpath);
@@ -52,12 +28,17 @@ export async function fixFilename(
       log.info('renaming: ' + filename + ' to: ' + newname + ' in: ' + dirpath);
       try {
         await fsAsync.rename(filepath, path.resolve(dirpath, newname));
+        currentName = newname;
       } catch (err) {
         log.warn('error renaming (' + err.code + ') path: ' + err.path);
       }
     } else {
       log.info('would rename: ' + filename + ' to: ' + newname + ' in: ' + dirpath);
     }
+  }
+
+  if (options.checkMp3s && currentName.endsWith('.mp3')) {
+    await fixMp3Tags(path.resolve(dirpath, currentName), options);
   }
 }
 
