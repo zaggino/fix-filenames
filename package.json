@@ -1,13 +1,35 @@
 {
   "name": "fix-filenames",
-  "version": "1.0.10",
+  "version": "2.0.0",
   "description": "renames non ascii characters in files and directories",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
-    "fix-filenames": "index.js"
+    "fix-filenames": "dist/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "npm run build",
+    "build": "tsc",
+    "build-watch": "tsc --watch",
+    "eslint": "eslint --ext=ts,tsx ./src"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run prepublish"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --ext=ts,tsx --fix",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "pureprofile",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
   },
   "repository": {
     "type": "git",
@@ -19,7 +41,20 @@
     "url": "https://github.com/zaggino/fix-filenames/issues"
   },
   "homepage": "https://github.com/zaggino/fix-filenames#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "dependencies": {
-    "bluebird": "^2.9.25"
+    "node-id3": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.17",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
+    "@typescript-eslint/parser": "^2.11.0",
+    "eslint": "^6.7.2",
+    "eslint-config-pureprofile": "^3.2.1",
+    "husky": "^3.1.0",
+    "lint-staged": "^9.5.0",
+    "typescript": "^3.7.3"
   }
 }
